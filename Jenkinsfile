@@ -18,8 +18,15 @@ pipeline {
             }
         }
         stage('Start Application') {
-            steps {
-                sh 'nohup node app.js > app.log 2>&1 &'  // Run app in background
+               steps {
+                // Ensure PM2 is installed globally
+                sh 'npm install -g pm2'
+                
+                // Stop previous instance (if running)
+                sh 'pm2 stop app || echo "No previous instance running"'
+                
+                // Start app using PM2 (daemon mode)
+                sh 'pm2 start app.js --name node-app --watch --log app.log'
             }
         }
     }
