@@ -23,10 +23,16 @@ pipeline {
                 sh 'npm install -g pm2'
                 
                 // Stop previous instance (if running)
-                sh 'pm2 stop app || echo "No previous instance running"'
+                sh 'pm2 stop node-app || echo "No previous instance running"'
                 
                 // Start app using PM2 (daemon mode)
                 sh 'pm2 start app.js --name node-app --watch --log app.log'
+                
+                // Save PM2 process list
+                sh 'pm2 save'
+                
+                // Ensure PM2 restarts on reboot
+                sh 'pm2 startup'
             }
         }
     }
