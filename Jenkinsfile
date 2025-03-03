@@ -8,10 +8,10 @@ pipeline {
     }
     stages {
         stage('Clone Repository') {
-                    git branch: 'main', 
-                    credentialsId: '3cf56ddb-acd5-45de-b5fa-5a16941589eb', 
-                    url: 'https://github.com/ranjeet-navsoft/node-js-jenkins.git'
+            steps {
+                git 'https://github.com/ranjeet-navsoft/node-js-jenkins.git'  // Replace with your actual GitHub repo
             }
+        }
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
