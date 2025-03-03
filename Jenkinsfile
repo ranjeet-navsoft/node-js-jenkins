@@ -4,7 +4,9 @@ pipeline {
         nodejs "nodejs_20"  // Ensure Node.js is configured in Jenkins
     }
     environment {
-        PORT = '3000'  // Set environment variables if needed
+        PORT = '3000' 
+        IMAGE_NAME = "my-node-app"
+        CONTAINER_NAME = "node-container"
     }
     stages {
         stage('Clone Repository') {
@@ -12,16 +14,28 @@ pipeline {
                 checkout scm // Replace with your actual GitHub repo
             }
         }
-         stage('Build Docker Image') {
+        stage('Verify Docker') {
             steps {
-                sh 'docker build -t my-node-app .'
+                sh 'docker --version'
+                sh 'docker ps'
             }
         }
-        stage('Start Application') {
-               steps {
-                sh 'docker stop my-node-app || true'
-                sh 'docker rm my-node-app || true'
-                sh 'docker run -d -p 3000:3000 --name my-node-app my-node-app'
+         stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Stop Existing Container') {
+            steps {
+                sh 'docker stop $CONTAINER_NAME || true'
+                sh 'docker rm $CONTAINER_NAME || true'
+            }
+        }
+
+        stage('Run Application in Docker') {
+            steps {
+                sh 'docker run -d -p 3000:3000 --name $CONTAINER_NAME $IMAGE_NAME'
             }
         }
     }
