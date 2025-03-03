@@ -1,10 +1,10 @@
 pipeline {
     agent any
     tools {
-        nodejs "nodejs_20"  // Ensure Node.js is configured in Jenkins
+        nodejs "nodejs_20"
     }
     environment {
-        PORT = '3000'  // Set environment variables if needed
+        PORT = '3000'
     }
     stages {
         stage('Clone Repository') {
@@ -12,36 +12,21 @@ pipeline {
                 checkout scm // Replace with your actual GitHub repo
             }
         }
-        stage('Install Dependencies') {
+         stage('Build Docker Image') {
             steps {
-                sh 'npm install'
+                sh 'docker build -t my-node-app .'
             }
         }
         stage('Start Application') {
                steps {
-                // Ensure PM2 is installed globally
-                sh 'npm install -g pm2'
-                
-                // Stop previous instance (if running)
-                sh 'pm2 stop node-app || echo "No previous instance running"'
-                
-                // Start app using PM2 (daemon mode)
-                sh 'pm2 start app.js --name node-app --watch --log app.log'
-                
-                // Save PM2 process list
-                sh 'pm2 save'
-                
-                // Ensure PM2 restarts on reboot
-                sh 'pm2 startup'
+                sh 'docker stop my-node-app || true'
+                sh 'docker rm my-node-app || true'
+                sh 'docker run -d -p 3000:3000 --name my-node-app my-node-app'
             }
         }
     }
-    post {
-        success {
-            echo 'Application deployed successfully!'
+    success {
+            echo '✅ Application is running in a Docker container!'
+            sh 'docker ps | grep my-node-app'
         }
-        failure {
-            echo 'Build failed! Check logs for details.'
-        }
-    }
 }
