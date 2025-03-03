@@ -17,11 +17,6 @@ pipeline {
                 sh 'npm install'
             }
         }
-        stage('Run Tests') {  // Optional
-            steps {
-                sh 'npm test'  // Ensure you have tests defined, or skip this stage
-            }
-        }
         stage('Start Application') {
             steps {
                 sh 'nohup node app.js > app.log 2>&1 &'  // Run app in background
