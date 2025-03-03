@@ -1,10 +1,10 @@
 pipeline {
     agent any
     tools {
-        nodejs "nodejs_20"
+        nodejs "nodejs_20"  // Ensure Node.js is configured in Jenkins
     }
     environment {
-        PORT = '3000'
+        PORT = '3000'  // Set environment variables if needed
     }
     stages {
         stage('Clone Repository') {
@@ -25,8 +25,12 @@ pipeline {
             }
         }
     }
-    success {
-            echo '✅ Application is running in a Docker container!'
-            sh 'docker ps | grep my-node-app'
+    post {
+        success {
+            echo 'Application deployed successfully!'
         }
+        failure {
+            echo 'Build failed! Check logs for details.'
+        }
+    }
 }
